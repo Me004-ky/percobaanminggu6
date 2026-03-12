@@ -23,7 +23,17 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'composer install'
+                script {
+                    docker.image('composer:2').inside {
+                        sh 'composer install'
+                    }
+                }
+            }
+        }
+
+        stage('Testing') {
+            steps {
+                sh 'echo "Ini adalah test pipeline Jenkins Laravel"'
             }
         }
 
@@ -39,3 +49,26 @@ pipeline {
 
     }
 }
+// pipeline {
+//     agent any
+
+//     stages {
+
+//         stage('Build') {
+//             steps {
+//                 sh 'composer install'
+//             }
+//         }
+
+//         stage('Deploy') {
+//             steps {
+//                 sshagent(['ssh-prod']) {
+//                     sh '''
+//                     ssh -o StrictHostKeyChecking=no root@172.28.167.7 "cd /var/www && git pull origin main"
+//                     '''
+//                 }
+//             }
+//         }
+
+//     }
+// }
