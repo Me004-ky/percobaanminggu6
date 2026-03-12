@@ -25,8 +25,7 @@ pipeline {
             steps {
                 script {
                     docker.image('composer:2').inside {
-                        sh 'git config --global --add safe.directory "*"'
-                        sh 'composer install --prefer-dist --no-progress --no-interaction'
+                        sh 'composer install --no-interaction --prefer-dist'
                     }
                 }
             }
@@ -34,22 +33,50 @@ pipeline {
 
         stage('Testing') {
             steps {
-                sh 'echo "Ini adalah test pipeline Jenkins Laravel"'
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                sshagent(['ssh-prod']) {
-                    sh '''
-                    ssh -o StrictHostKeyChecking=no root@172.28.167.7 "cd /var/www && git pull origin main"
-                    '''
+                script {
+                    docker.image('ubuntu').inside {
+                        sh 'echo "Ini adalah test pipeline Jenkins Laravel"'
+                    }
                 }
             }
         }
 
     }
 }
+// pipeline {
+//     agent any
+
+//     stages {
+
+//         stage('Build') {
+//             steps {
+//                 script {
+//                     docker.image('composer:2').inside {
+//                         sh 'git config --global --add safe.directory "*"'
+//                         sh 'composer install --prefer-dist --no-progress --no-interaction'
+//                     }
+//                 }
+//             }
+//         }
+
+//         stage('Testing') {
+//             steps {
+//                 sh 'echo "Ini adalah test pipeline Jenkins Laravel"'
+//             }
+//         }
+
+//         stage('Deploy') {
+//             steps {
+//                 sshagent(['ssh-prod']) {
+//                     sh '''
+//                     ssh -o StrictHostKeyChecking=no root@172.28.167.7 "cd /var/www && git pull origin main"
+//                     '''
+//                 }
+//             }
+//         }
+
+//     }
+// }
 // pipeline {
 //     agent any
 
