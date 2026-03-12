@@ -31,7 +31,7 @@ pipeline {
             steps {
                 sshagent(['ssh-prod']) {
                     sh '''
-                    ssh -o StrictHostKeyChecking=no root@IP_VPS "cd /var/www && git pull origin main"
+                    ssh -o StrictHostKeyChecking=no root@172.28.167.7 "cd /var/www && git pull origin main"
                     '''
                 }
             }
