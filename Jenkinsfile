@@ -24,9 +24,9 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    docker.image('composer:2').inside('--entrypoint=""') {
-                        sh 'git config --global --add safe.directory /var/jenkins_home/workspace/laravel-dev'
-                        sh 'composer install --no-interaction --prefer-dist'
+                    docker.image('composer:2').inside {
+                        sh 'git config --global --add safe.directory "*"'
+                        sh 'composer install --prefer-dist --no-progress --no-interaction'
                     }
                 }
             }
