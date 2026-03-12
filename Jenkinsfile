@@ -16,3 +16,26 @@ node {
     }
 
 }
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Build') {
+            steps {
+                sh 'composer install'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sshagent(['ssh-prod']) {
+                    sh '''
+                    ssh -o StrictHostKeyChecking=no root@IP_VPS "cd /var/www && git pull origin main"
+                    '''
+                }
+            }
+        }
+
+    }
+}
