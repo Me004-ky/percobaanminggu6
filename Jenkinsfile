@@ -24,7 +24,8 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    docker.image('composer:2').inside {
+                    docker.image('composer:2').inside('--user root') {
+                        sh 'chmod -R 777 /var/jenkins_home/workspace'
                         sh 'composer install --no-interaction --prefer-dist'
                     }
                 }
