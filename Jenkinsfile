@@ -1,5 +1,4 @@
 node {
-    node {
 
     environment {
         PROD_HOST = "172.28.167.7"
@@ -27,26 +26,26 @@ node {
     }
 
     stage("Deploy") {
-    docker.image('agung3wi/alpine-rsync:1.1').inside('-u root') {
+        docker.image('agung3wi/alpine-rsync:1.1').inside('-u root') {
 
-        sshagent(['ssh-prod']) {
+            sshagent(['ssh-prod']) {
 
-            sh '''
-            mkdir -p ~/.ssh
-            ssh-keyscan -H $PROD_HOST >> ~/.ssh/known_hosts
-            '''
+                sh '''
+                mkdir -p ~/.ssh
+                ssh-keyscan -H $PROD_HOST >> ~/.ssh/known_hosts
+                '''
 
-            sh '''
-            rsync -rav --delete ./ \
-            -e "ssh -o StrictHostKeyChecking=no" \
-            mine@$PROD_HOST:/home/mine/prod.kelasdevops.xyz/ \
-            --exclude=.env \
-            --exclude=storage \
-            --exclude=.git
-            '''
+                sh '''
+                rsync -rav --delete ./ \
+                -e "ssh -o StrictHostKeyChecking=no" \
+                mine@$PROD_HOST:/home/mine/prod.kelasdevops.xyz/ \
+                --exclude=.env \
+                --exclude=storage \
+                --exclude=.git
+                '''
+            }
         }
     }
-}
 
 }
 // node {
