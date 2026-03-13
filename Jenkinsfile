@@ -2,39 +2,94 @@ node {
 
     checkout scm
 
-    // deploy env dev
+    // ======================
+    // Build (Composer Install)
+    // ======================
     stage("Build") {
         docker.image('composer:2').inside('-u root') {
-            sh 'rm -f composer.lock'
-            sh 'composer install'
+            sh '''
+            git config --global --add safe.directory /var/jenkins_home/workspace/laravel-dev
+            rm -f composer.lock
+            composer install --no-interaction --prefer-dist
+            '''
         }
     }
 
+    // ======================
     // Testing
+    // ======================
     stage("Testing") {
         docker.image('ubuntu').inside('-u root') {
-            sh 'echo "Ini adalah test"'
+            sh '''
+            echo "Ini adalah test"
+            php -v || true
+            '''
         }
     }
-    // deploy env prod
-stage("Deploy") {
-    docker.image('agung3wi/alpine-rsync:1.1').inside('-u root') {
 
-        sshagent (credentials: ['ssh-prod']) {
+    // ======================
+    // Deploy ke Production
+    // ======================
+    stage("Deploy") {
+        docker.image('agung3wi/alpine-rsync:1.1').inside('-u root') {
 
-            sh 'mkdir -p ~/.ssh'
-            sh 'ssh-keyscan -H "$PROD_HOST" > ~/.ssh/known_hosts'
+            sshagent(credentials: ['ssh-prod']) {
 
-            sh """
-            rsync -rav --delete ./laravel/ \
-            ubuntu@$PROD_HOST:/home/ubuntu/prod.kelasdevops.xyz/ \
-            --exclude=.env --exclude=storage --exclude=.git
-            """
+                sh '''
+                mkdir -p ~/.ssh
+                ssh-keyscan -H $PROD_HOST >> ~/.ssh/known_hosts
+                '''
+
+                sh '''
+                rsync -rav --delete ./ \
+                ubuntu@$PROD_HOST:/home/ubuntu/prod.kelasdevops.xyz/ \
+                --exclude=.env \
+                --exclude=storage \
+                --exclude=.git
+                '''
+            }
         }
-
     }
+
 }
-}
+// node {
+
+//     checkout scm
+
+//     // deploy env dev
+//     stage("Build") {
+//         docker.image('composer:2').inside('-u root') {
+//             sh 'rm -f composer.lock'
+//             git config --global --add safe.directory /var/jenkins_home/workspace/laravel-dev
+//             sh 'composer install'
+//         }
+//     }
+
+//     // Testing
+//     stage("Testing") {
+//         docker.image('ubuntu').inside('-u root') {
+//             sh 'echo "Ini adalah test"'
+//         }
+//     }
+//     // deploy env prod
+// stage("Deploy") {
+//     docker.image('agung3wi/alpine-rsync:1.1').inside('-u root') {
+
+//         sshagent (credentials: ['ssh-prod']) {
+
+//             sh 'mkdir -p ~/.ssh'
+//             sh 'ssh-keyscan -H "$PROD_HOST" > ~/.ssh/known_hosts'
+
+//             sh """
+//             rsync -rav --delete ./laravel/ \
+//             ubuntu@$PROD_HOST:/home/ubuntu/prod.kelasdevops.xyz/ \
+//             --exclude=.env --exclude=storage --exclude=.git
+//             """
+//         }
+
+//     }
+// }
+// }
 // node {
 
 //     checkout scm
