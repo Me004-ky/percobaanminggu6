@@ -75,28 +75,28 @@ node {
     // ======================
     // Deploy ke Production
     // ======================
-    stage("Deploy") {
-        docker.image('agung3wi/alpine-rsync:1.1').inside('-u root') {
+//     stage("Deploy") {
+//         docker.image('agung3wi/alpine-rsync:1.1').inside('-u root') {
 
-            sshagent(credentials: ['ssh-prod']) {
+//             sshagent(credentials: ['ssh-prod']) {
 
-                sh '''
-                mkdir -p ~/.ssh
-                ssh-keyscan -H $PROD_HOST >> ~/.ssh/known_hosts
-                '''
+//                 sh '''
+//                 mkdir -p ~/.ssh
+//                 ssh-keyscan -H $PROD_HOST >> ~/.ssh/known_hosts
+//                 '''
 
-                sh '''
-                rsync -rav --delete ./ \
-                mine@$PROD_HOST:/home/mine/prod.kelasdevops.xyz/ \
-                --exclude=.env \
-                --exclude=storage \
-                --exclude=.git
-                '''
-            }
-        }
-    }
+//                 sh '''
+//                 rsync -rav --delete ./ \
+//                 mine@$PROD_HOST:/home/mine/prod.kelasdevops.xyz/ \
+//                 --exclude=.env \
+//                 --exclude=storage \
+//                 --exclude=.git
+//                 '''
+//             }
+//         }
+//     }
 
-}
+// }
 // node {
 
 //     checkout scm
