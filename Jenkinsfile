@@ -16,6 +16,37 @@ node {
     }
 
 }
+// pipeline {
+//     agent any
+
+//     stages {
+
+//         stage('Install Dependency') {
+//             steps {
+//                 script {
+//                     docker.image('composer:2').inside('--user root') {
+//                         sh 'chmod -R 777 /var/jenkins_home/workspace'
+//                         sh 'composer install --no-interaction --prefer-dist'
+//                     }
+//                 }
+//             }
+//         }
+
+//         stage('Laravel Check') {
+//             steps {
+//                 sh 'php -v || true'
+//                 sh 'ls -la'
+//             }
+//         }
+
+//         stage('Testing') {
+//             steps {
+//                 echo 'Pipeline Laravel Jenkins berhasil dijalankan'
+//             }
+//         }
+
+//     }
+// }
 pipeline {
     agent any
 
