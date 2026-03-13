@@ -6,9 +6,9 @@ node {
     // Build (Composer Install)
     // ======================
     stage("Build") {
-        docker.image('composer:2').inside('-u root') {
+        docker.image('composer:2').inside('--entrypoint="" -u root') {
             sh '''
-            git config --global --add safe.directory /var/jenkins_home/workspace/laravel-dev
+            git config --global --add safe.directory $WORKSPACE
             rm -f composer.lock
             composer install --no-interaction --prefer-dist
             '''
@@ -19,13 +19,68 @@ node {
     // Testing
     // ======================
     stage("Testing") {
-        docker.image('ubuntu').inside('-u root') {
+        docker.image('php:8.3-cli').inside('-u root') {
             sh '''
             echo "Ini adalah test"
-            php -v || true
+            php -v
             '''
         }
     }
+
+    // ======================
+    // Deploy ke Production
+    // ======================
+    stage("Deploy") {
+        docker.image('agung3wi/alpine-rsync:1.1').inside('--entrypoint="" -u root') {
+
+            sshagent(['ssh-prod']) {
+
+                sh '''
+                mkdir -p ~/.ssh
+                chmod 700 ~/.ssh
+                ssh-keyscan -H $PROD_HOST >> ~/.ssh/known_hosts
+                '''
+
+                sh '''
+                rsync -avz --delete ./ \
+                mine@$PROD_HOST:/home/mine/prod.kelasdevops.xyz/ \
+                --exclude=.env \
+                --exclude=storage \
+                --exclude=.git
+                '''
+            }
+        }
+    }
+
+}
+// node {
+
+//     checkout scm
+
+//     // ======================
+//     // Build (Composer Install)
+//     // ======================
+//     stage("Build") {
+//         docker.image('composer:2').inside('-u root') {
+//             sh '''
+//             git config --global --add safe.directory /var/jenkins_home/workspace/laravel-dev
+//             rm -f composer.lock
+//             composer install --no-interaction --prefer-dist
+//             '''
+//         }
+//     }
+
+//     // ======================
+//     // Testing
+//     // ======================
+//     stage("Testing") {
+//         docker.image('ubuntu').inside('-u root') {
+//             sh '''
+//             echo "Ini adalah test"
+//             php -v || true
+//             '''
+//         }
+//     }
 
     // ======================
     // Deploy ke Production
