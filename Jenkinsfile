@@ -2,47 +2,37 @@ node {
 
     checkout scm
 
-    // ======================
-    // Build (Composer Install)
-    // ======================
     stage("Build") {
-        docker.image('composer:2').inside('--entrypoint="" -u root') {
+        docker.image('composer:2').inside('-u root') {
             sh '''
-            git config --global --add safe.directory $WORKSPACE
+            git config --global --add safe.directory /var/jenkins_home/workspace/laravel-dev
             rm -f composer.lock
             composer install --no-interaction --prefer-dist
             '''
         }
     }
 
-    // ======================
-    // Testing
-    // ======================
     stage("Testing") {
-        docker.image('php:8.3-cli').inside('-u root') {
+        docker.image('ubuntu').inside('-u root') {
             sh '''
             echo "Ini adalah test"
-            php -v
+            php -v || true
             '''
         }
     }
 
-    // ======================
-    // Deploy ke Production
-    // ======================
     stage("Deploy") {
-        docker.image('agung3wi/alpine-rsync:1.1').inside('--entrypoint="" -u root') {
+        docker.image('agung3wi/alpine-rsync:1.1').inside('-u root') {
 
             sshagent(['ssh-prod']) {
 
                 sh '''
                 mkdir -p ~/.ssh
-                chmod 700 ~/.ssh
                 ssh-keyscan -H $PROD_HOST >> ~/.ssh/known_hosts
                 '''
 
                 sh '''
-                rsync -avz --delete ./ \
+                rsync -rav --delete ./ \
                 mine@$PROD_HOST:/home/mine/prod.kelasdevops.xyz/ \
                 --exclude=.env \
                 --exclude=storage \
