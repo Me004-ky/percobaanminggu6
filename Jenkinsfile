@@ -42,7 +42,7 @@ node {
 
                 sh '''
                 rsync -rav --delete ./ \
-                ubuntu@$PROD_HOST:/home/ubuntu/prod.kelasdevops.xyz/ \
+                mine@$PROD_HOST:/home/ubuntu/prod.kelasdevops.xyz/ \
                 --exclude=.env \
                 --exclude=storage \
                 --exclude=.git
