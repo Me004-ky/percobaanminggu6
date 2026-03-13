@@ -4,13 +4,14 @@ node {
         PROD_HOST = "172.28.167.7"
     }
 
-    checkout scm
+    stage("Checkout") {
+        checkout scm
+    }
 
     stage("Build") {
-        docker.image('composer:2').inside('-u root') {
+        docker.image('composer:2').inside('--entrypoint="" -u root') {
             sh '''
             git config --global --add safe.directory /var/jenkins_home/workspace/laravel-dev
-            rm -f composer.lock
             composer install --no-interaction --prefer-dist
             '''
         }
@@ -35,14 +36,14 @@ node {
                 ssh-keyscan -H $PROD_HOST >> ~/.ssh/known_hosts
                 '''
 
-                sh '''
+                sh """
                 rsync -rav --delete ./ \
-                -e "ssh -o StrictHostKeyChecking=no" \
                 mine@$PROD_HOST:/home/mine/prod.kelasdevops.xyz/ \
                 --exclude=.env \
                 --exclude=storage \
                 --exclude=.git
-                '''
+                """
+
             }
         }
     }
