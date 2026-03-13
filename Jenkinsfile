@@ -33,7 +33,7 @@ node {
 
                 sh '''
                 mkdir -p ~/.ssh
-                ssh-keyscan -H $PROD_HOST >> ~/.ssh/known_hosts
+                ssh-keyscan -H $PROD_HOST >> ~/.ssh/known_hosts || true
                 '''
 
                 sh """
