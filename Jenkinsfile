@@ -21,7 +21,7 @@ pipeline {
 
     stages {
 
-        stage('Build') {
+        stage('Install Dependency') {
             steps {
                 script {
                     docker.image('composer:2').inside('--user root') {
@@ -32,18 +32,49 @@ pipeline {
             }
         }
 
+        stage('Laravel Check') {
+            steps {
+                sh 'php -v || true'
+                sh 'ls -la'
+            }
+        }
+
         stage('Testing') {
             steps {
-                script {
-                    docker.image('ubuntu').inside {
-                        sh 'echo "Ini adalah test pipeline Jenkins Laravel"'
-                    }
-                }
+                echo 'Pipeline Laravel Jenkins berhasil dijalankan'
             }
         }
 
     }
 }
+// pipeline {
+//     agent any
+
+//     stages {
+
+//         stage('Build') {
+//             steps {
+//                 script {
+//                     docker.image('composer:2').inside('--user root') {
+//                         sh 'chmod -R 777 /var/jenkins_home/workspace'
+//                         sh 'composer install --no-interaction --prefer-dist'
+//                     }
+//                 }
+//             }
+//         }
+
+//         stage('Testing') {
+//             steps {
+//                 script {
+//                     docker.image('ubuntu').inside {
+//                         sh 'echo "Ini adalah test pipeline Jenkins Laravel"'
+//                     }
+//                 }
+//             }
+//         }
+
+//     }
+// }
 // pipeline {
 //     agent any
 
